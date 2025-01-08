@@ -31,10 +31,6 @@ Selesai
 
 <?php 
 require "function.php";
-// Nama file: [daftar.php]
-// Deskripsi: [Berfungsi untuk menampilkan halaman daftar masuk untuk pengguna dan memasukkan akun ke aplikasi]
-// Dibuat Oleh: [Lidya Nur Raudhatul JPR] - NIM [3312401046] [Muhammad Arthur Putra G] - NIM[3312401051] [Muhammad Danial] - [3312401042]
-// Tanggal: 04 - 11 November 2024 
 
 ?>
 <!DOCTYPE html>
