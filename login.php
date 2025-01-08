@@ -1,9 +1,31 @@
-<!-- 
-Nama file: [login.php]
-Deskripsi: [Halaman login untuk pengguna agar bisa masuk menggunakan akun yang telah dibuat]
-Dibuat Oleh: [Lidya Nur Raudhatul JPR] - NIM [3312401046] [Muhammad Arthur Putra G] - NIM[3312401051] [Muhammad Danial] - [3312401042]
-Tanggal: 04 November 2024  
--->
+// Pseudocode untuk login.php
+// Deskripsi: Berfungsi untuk menampilkan halaman login dan memverifikasi kredensial pengguna
+
+Mulai
+    // Cek apakah pengguna sudah login
+    Jika ada sesi login yang valid:
+        Arahkan pengguna ke halaman index.php
+        Keluar dari proses
+
+    // Tampilkan halaman login dengan form untuk nama pengguna dan kata sandi
+    Tampilkan form dengan kolom: nama pengguna dan kata sandi
+
+    // Ketika tombol login diklik
+    Jika pengguna mengirimkan form (method POST):
+        Ambil nilai dari input form (userName, password)
+
+        // Cek apakah data yang dimasukkan valid
+        Cek apakah nama pengguna dan kata sandi cocok dengan data yang ada di database
+        Jika cocok:
+            Mulai sesi untuk pengguna dan arahkan ke halaman index.php
+        Jika tidak cocok:
+            Tampilkan pesan kesalahan bahwa username atau password salah
+
+    Jika pengguna belum mengirimkan form:
+        Tampilkan halaman form login
+
+Selesai
+
 
 <?php 
 session_start();
