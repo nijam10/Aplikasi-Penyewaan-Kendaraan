@@ -1,3 +1,34 @@
+// Pseudocode untuk daftar.php
+// Deskripsi: Berfungsi untuk menampilkan halaman daftar masuk untuk pengguna dan memasukkan akun ke aplikasi
+
+Mulai
+    // Tampilkan form pendaftaran dengan input untuk email, username, nomor telepon, tanggal lahir, kata sandi, dan konfirmasi kata sandi
+    Tampilkan form dengan kolom: email, username, noTelepon, tglLahir, password, confirmPassword
+
+    // Ketika tombol "Daftar" diklik
+    Jika pengguna mengirimkan form (method POST):
+        Ambil nilai dari input form (email, username, nomor telepon, tanggal lahir, password, confirmPassword)
+        
+        // Validasi data yang diterima
+        Jika password dan confirmPassword tidak cocok:
+            Tampilkan pesan error: "Kata sandi tidak cocok"
+        Jika input valid:
+            // Cek apakah email sudah terdaftar di database
+            Cek apakah email sudah ada di database
+            Jika email sudah ada:
+                Tampilkan pesan error: "Email sudah terdaftar"
+            Jika email belum terdaftar:
+                // Simpan data pengguna baru ke dalam database
+                Masukkan data (email, username, nomor telepon, tanggal lahir, password) ke dalam database
+                
+                // Tampilkan pesan sukses atau arahkan pengguna ke halaman login
+                Tampilkan pesan sukses atau arahkan pengguna ke halaman login.php
+                
+    Jika pengguna belum mengirimkan form:
+        // Tampilkan halaman form pendaftaran untuk pengguna baru
+
+Selesai
+
 <?php 
 require "function.php";
 // Nama file: [daftar.php]
