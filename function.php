@@ -4,131 +4,138 @@
 // Dibuat Oleh: [Muhammad Danial] - NIM [3312401042]
 // Tanggal: 18 November 2024 
 
-$host = "localhost"; 	 
-$user = "root"; 	 
-$pass = ""; 	 
+$host = "localhost";     
+$user = "root";     
+$pass = "";     
 $db = "easyride"; //Nama Database 
 
-// melakukan koneksi ke database 	 
-$koneksi = mysqli_connect($host, $user, $pass, $db); 
-
-if(!$koneksi){ 	 
-    echo "Gagal koneksi: " . die(mysqli_connect_error($koneksi));
+// Melakukan koneksi ke database 
+$koneksi = mysqli_connect($host, $user, $pass, $db);
+if(!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 
 // Registrasi   
-if(isset($_POST['register'])){
-    // Jika tombol register di klik
-    $userName = strtolower(stripslashes($_POST['userName'])) ;
-    $email = mysqli_real_escape_string($koneksi, $_POST['email']);
-    $password = $_POST['password'];
-    $confirm = $_POST['confirm'];
-    $tglLahir = $_POST['tglLahir'];
-    $noTelepon = $_POST['noTelepon'];
-    $role = "user";
+if (isset($_POST['register'])) {
+    try {
+        // Ambil data dari form
+        $userName = strtolower(stripslashes($_POST['userName']));
+        $email = mysqli_real_escape_string($koneksi, $_POST['email']);
+        $password = $_POST['password'];
+        $confirm = $_POST['confirm'];
+        $tglLahir = $_POST['tglLahir'];
+        $noTelepon = $_POST['noTelepon'];
+        $role = "user";
 
-    // Cek konfirmasi katasandi
-    if ($confirm !== $password) {
-        echo "<script>
-            alert ('Konfirmasi katasandi tidak sesuai');
-            window.location.href = 'daftar.php';
-        </script>";
-        exit;
-    }
-
-    // Cek username sudah ada atau belum
-    $insert = mysqli_query($koneksi, "SELECT user_name FROM user WHERE user_name = '$userName' ");
-        if (mysqli_fetch_assoc($insert)) {
-            echo "<script>
-            alert ('Nama pengguna sudah terdaftar');
-            window.location.href = 'daftar.php';
-                </script>";
-            exit;
+        // Validasi konfirmasi kata sandi
+        if ($confirm !== $password) {
+            throw new Exception('Konfirmasi kata sandi tidak cocok');
         }
 
-    // Engkripsi Password
-    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        // Cek apakah username sudah ada
+        $cekUsername = mysqli_query($koneksi, "SELECT user_name FROM user WHERE user_name = '$userName'");
+        if (mysqli_fetch_assoc($cekUsername)) {
+            throw new Exception('Nama pengguna sudah terdaftar');
+        }
 
-    // Tambahkan data pengguna ke database
-    $insert = mysqli_query($koneksi, "INSERT INTO user (user_name, email, password,tgl_lahir, no_telepon, role)
-    VALUES ('$userName', '$email', '$passwordHash', '$tglLahir', '$noTelepon', '$role')") 
-    or die(mysqli_error($koneksi));
-    // Redirect halaaman
-    if ($insert) {
+        // Enkripsi password
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        // Simpan data ke database
+        $query = "INSERT INTO user (user_name, email, password, tgl_lahir, no_telepon, role) 
+                  VALUES ('$userName', '$email', '$passwordHash', '$tglLahir', '$noTelepon', '$role')";
+        $insert = mysqli_query($koneksi, $query);
+
+        if (!$insert) {
+            throw new Exception('Pendaftaran gagal: ' . mysqli_error($koneksi));
+        }
+
+        // Berhasil registrasi
         echo "<script>
             alert('Pendaftaran berhasil');
             window.location.href = 'login.php';
-            </script>";
-    } else {
+        </script>";
+
+    } catch (Exception $e) {
+        // Menangkap exception dan menampilkan pesan error
         echo "<script>
-            alert('Registrasi Gagal');
+            alert('Error: " . $e->getMessage() . "');
             window.location.href = 'daftar.php';
         </script>";
     }
 }
 
 // Login
-if (isset ($_POST["login"])){
-    // Jika tombol login diklik
+if (isset($_POST["login"])) {
+    try {
+        // Ambil data dari form
+        $userName = $_POST["userName"];
+        $password = $_POST["password"];
 
-    $userName = $_POST["userName"];
-    $password = $_POST["password"];
-
-    // Cek database username
-    $cekdb = mysqli_query($koneksi, "SELECT * FROM user WHERE user_name = '$userName'");
-
-    // Cek username 
-    if (mysqli_num_rows($cekdb) === 1 ){
-        // cek password
-        $data = mysqli_fetch_assoc($cekdb);
-        if (password_verify($password, $data["password"])){
-            // Set session
-            $_SESSION["role"] = $data["role"];
-            $_SESSION["userName"] = $data["user_name"];
-
-
-            // Redirect halaman
-            if ($data["role"] === "admin") {
-            echo 
-                "<script>
-                    alert('Login Berhasil');
-                    window.location.href = 'dashboard/index.php';
-                </script>";
-            } else if ($data["role"] === "user") {
-            echo 
-                "<script>
-                    alert('Login Berhasil');
-                    window.location.href = 'index.php';
-                </script>";
-            }
-            exit;
+        // Cek apakah username ada di database
+        $cekdb = mysqli_query($koneksi, "SELECT * FROM user WHERE user_name = '$userName'");
+        if (mysqli_num_rows($cekdb) === 0) {
+            throw new Exception('Username tidak ditemukan');
         }
-    }
-    $error = true;
-}
-?>
 
-<?php 
-// Fungsi mengirim data hubungi kami
-if(isset($_POST['kirim'])){
-    // Jika tombol register di klik
-    $namaPengguna = strtolower(stripslashes($_POST['namaPengguna'])) ;
-    $email = mysqli_real_escape_string($koneksi, $_POST['email']);
-    $subjek = $_POST['subjek'];
-    $pesan = $_POST['pesan'];
-    // Tambahkan data pengguna ke database
-    $insert = mysqli_query($koneksi, "INSERT INTO masukan (user_name, email, subjek, pesan)
-    VALUES ('$namaPengguna', '$email', '$subjek', '$pesan')") 
-    or die(mysqli_error($koneksi));
-    // Redirect halaman
-    if ($insert) {
-        echo "<script>
-            alert('Data berhasil dikirm');
-            window.location.href = 'index.php';
+        // Ambil data pengguna
+        $data = mysqli_fetch_assoc($cekdb);
+
+        // Verifikasi password
+        if (!password_verify($password, $data["password"])) {
+            throw new Exception('Password salah');
+        }
+
+        // Set session dan arahkan ke halaman sesuai role
+        $_SESSION["role"] = $data["role"];
+        $_SESSION["userName"] = $data["user_name"];
+
+        if ($data["role"] === "admin") {
+            echo "<script>
+                alert('Login Berhasil');
+                window.location.href = 'dashboard/index.php';
             </script>";
-    } else {
+        } else if ($data["role"] === "user") {
+            echo "<script>
+                alert('Login Berhasil');
+                window.location.href = 'index.php';
+            </script>";
+        }
+    } catch (Exception $e) {
+        // Menangkap exception dan menampilkan pesan error
+        $error = true;
         echo "<script>
-            alert('Data gagal dikirim');
+            alert('Error: " . $e->getMessage() . "');
+            window.location.href = 'login.php';
+        </script>";
+    }
+}
+
+// Fungsi mengirim data hubungi kami
+if (isset($_POST['kirim'])) {
+    try {
+        // Ambil data dari form
+        $namaPengguna = strtolower(stripslashes($_POST['namaPengguna']));
+        $email = mysqli_real_escape_string($koneksi, $_POST['email']);
+        $subjek = $_POST['subjek'];
+        $pesan = $_POST['pesan'];
+
+        // Query untuk menyimpan data
+        $insert = mysqli_query($koneksi, "INSERT INTO masukan (user_name, email, subjek, pesan) 
+                                           VALUES ('$namaPengguna', '$email', '$subjek', '$pesan')");
+        if (!$insert) {
+            throw new Exception('Gagal mengirim data: ' . mysqli_error($koneksi));
+        }
+
+        // Berhasil mengirim data
+        echo "<script>
+            alert('Data berhasil dikirim');
+            window.location.href = 'index.php';
+        </script>";
+    } catch (Exception $e) {
+        // Menangkap exception dan menampilkan pesan error
+        echo "<script>
+            alert('Error: " . $e->getMessage() . "');
             window.location.href = 'index.php';
         </script>";
     }
