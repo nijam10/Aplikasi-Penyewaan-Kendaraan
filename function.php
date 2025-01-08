@@ -1,8 +1,4 @@
 <?php
-// Nama file: [function.php]
-// Deskripsi: [Berfungsi untuk menghubungkan database user dan menyimpan function untuk proses login dan daftar]
-// Dibuat Oleh: [Muhammad Danial] - NIM [3312401042]
-// Tanggal: 18 November 2024 
 
 $host = "localhost";     
 $user = "root";     
